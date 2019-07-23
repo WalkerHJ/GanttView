@@ -82,7 +82,7 @@
 * 插件支持模块下任务超过2条数据自动显示展开/收起按钮
 * 插件支持节假日Holidays表格高亮，excludeHolidays:true
 * cellWidth表格宽度(ganttScale = hours/weeks:宽度重新计算 最小为50) 避免未撑满整个屏幕
-* showLine是否显示当前时间节点(小时为线条展示,小时为表格高亮)
-* 关于版本问题(jquery-ui-1.8.2/jquery-1.4.2)JQ版本可为高版本JQ-ui版本暂不支持高版本
+* showLine是否显示当前时间节点(小时为线条展示，周/月为表格高亮)
+* 关于版本问题(jquery-ui-1.8.2/jquery-1.4.2)JQ版本可为高版本，JQ-ui版本暂不支持高版本
 * 图表上所有样式可自定义或取消
 
