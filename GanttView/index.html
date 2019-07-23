@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="ja">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>jQuery Gantt</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="jquery.ganttView.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="lib/flick/jquery-ui-1.8.2.custom.css" />
+    <script type="text/javascript" src="lib/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="lib/jquery-ui-1.8.2.custom.min.js"></script>
+    <script type="text/javascript" src="lib/gantt-date.js"></script>
+    <script type="text/javascript" src="lib/holidays.js"></script>
+    <script type="text/javascript" src="jquery.ganttView.js"></script>
+  
+</head>
+
+<body>
+    <div id="ganttChart"></div>
+    <br />
+    <div id="ganttData" style="display: none">
+        <div class="ganttData-item">
+            <div class="ganttData-header">Item ID</div>
+            <div class="ganttData-input"><input type="text" id="ganttData-item-id" /></div>
+        </div>
+        <div class="ganttData-item">
+            <div class="ganttData-header">Item Name</div>
+            <div class="ganttData-input"><input type="text" id="ganttData-item-name" /></div>
+        </div>
+        <div class="ganttData-item">
+            <div class="ganttData-header">Series ID</div>
+            <div class="ganttData-input"><input type="text" id="ganttData-series-id" /></div>
+        </div>
+        <div class="ganttData-item">
+            <div class="ganttData-header">Series Name</div>
+            <div class="ganttData-input"><input type="text" id="ganttData-series-name" /></div>
+        </div>
+        <div class="ganttData-item">
+            <div class="ganttData-header">Start</div>
+            <div class="ganttData-input"><input type="text" id="ganttData-series-start" /></div>
+        </div>
+        <div class="ganttData-item">
+            <div class="ganttData-header">End</div>
+            <div class="ganttData-input"><input type="text" id="ganttData-series-end" /></div>
+        </div>
+        <div class="ganttData-item">
+            <div class="ganttData-header">Series Text</div>
+            <div class="ganttData-input"><input type="text" id="ganttData-series-text" /></div>
+        </div>
+        <div class="ganttData-item">
+            <input type="button" id="ganttData-reset" value="复位" />
+            <input type="button" id="ganttData-add" value="追加" />
+            <input type="button" id="ganttData-refresh" value="更新" />
+            <input type="button" id="ganttData-delete" value="削除" />
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+
+    $(function () {
+        var ganttData = [
+            {
+                id: 1, name: "type1", series: [
+                    { id: 1, name: "task1", text: "Test1-1", start: new Date(2019, 00, 02, 3, 30), end: new Date(2019, 00, 05, 5, 45), readOnly: true },
+                    { id: 2, name: "task2", text: "Test1-2", start: new Date(2019, 00, 02, 6, 30), end: new Date(2019, 00, 05, 12, 30) }
+                ]
+            },
+            { id: 2, name: "type2", series: [{ id: 3, name: "task3", text: "Test2", start: new Date(2019, 00, 05, 0, 0), end: new Date(2019, 00, 08, 3, 0) }] },
+            { id: 3, name: "type3", series: [{ id: 4, name: "task4", start: new Date(2019, 00, 09, 7, 0), end: new Date(2019, 00, 12, 9, 0) }] },
+            { id: 4, name: "type4", series: [{ id: 5, name: "task5", start: new Date(2019, 00, 02, 8, 0), end: new Date(2019, 00, 08, 11, 0), readOnly: true }] },
+            { id: 5, name: "type5", series: [{ id: 6, name: "task6", start: new Date(2019, 00, 08, 8, 0), end: new Date(2019, 00, 15, 18, 0) }] },
+            { id: 5, name: "type6", series: [{}] },
+            { id: 5, name: "type7", series: [{}] },
+            { id: 4, name: "type8", series: [{ id: 5, name: "task7", start: new Date(2019, 00, 02, 5, 0), end: new Date(2019, 00, 08, 18, 0), readOnly: true }] },
+            { id: 5, name: "type9", series: [{ id: 6, name: "task8", start: new Date(2019, 00, 08, 8, 0), end: new Date(2019, 00, 15, 19, 00) }] },
+            { id: 4, name: "type10", series: [{ id: 5, name: "task9", start: new Date(2019, 00, 02, 7, 0), end: new Date(2019, 00, 08, 18, 0), readOnly: true }] },
+            { id: 5, name: "type13", series: [{ id: 6, name: "task12", start: new Date(2019, 00, 08, 9, 0), end: new Date(2019, 00, 15, 19, 0) }] },
+            { id: 5, name: "type14", series: [{}] },
+            { id: 5, name: "type15", series: [{}] },
+            { id: 5, name: "type18", series: [{ id: 6, name: "task13", start: new Date(2019, 00, 08, 8, 0), end: new Date(2019, 00, 15, 18, 0) }] },
+            { id: 5, name: "type19", series: [{ id: 6, name: "task14", start: new Date(2019, 00, 08, 8, 0), end: new Date(2019, 00, 15, 19, 0) }] },
+            { id: 5, name: "type20", series: [{ id: 6, name: "task15", start: new Date(2019, 00, 02, 6, 0), end: new Date(2019, 00, 18, 22, 0) }] },
+        ];
+        var ganttData2 = [
+            {
+                id: 100, name: "主任务", series: [
+                    {
+                        id: 101, name: "执行任务", serieslevel: [
+                            { id: 1011, name: "task1-执行", text: "Test1：入职表格格式格表格格式", start: new Date(2019, 06, 18, 2, 30), end: new Date(2019, 06, 18, 8, 45) ,state:1, cycle:1,delay:1,approve:1,private:1,schedule:20,star:6},
+                            { id: 1012, name: "task2-执行", text: "入职表格格式格计入职表格格式格计入职表格格式格计入职表格格式格计入职表入职白哦个表格", start: new Date(2019, 06, 15, 6, 30), end: new Date(2019, 06, 17, 12, 30) ,state:2, cycle:1,delay:0,schedule:100,star:1},
+                            { id: 1013, name: "task3-执行", text: "Test1：入职表格格式格表格格式你撒就是/?", start: new Date(2019, 06, 20, 20, 00), end: new Date(2019, 06, 20, 21, 00) ,state:3, cycle:1,delay:1,approve:1,schedule:50,readOnly: true ,star:3},
+                        ]
+                    }, {
+                        id: 102, name: "负责任务", serieslevel: [
+                            { id: 1021, name: "task1-负责", text: "task1-负责", start: new Date(2019, 06, 17, 3, 30), end: new Date(2019, 06, 18, 17, 45) ,state:0, cycle:0},
+                            { id: 1022, name: "task2-负责", text: "task2-负责", start: new Date(2019, 06, 18, 5, 30), end: new Date(2019, 06, 18, 16, 45) ,state:4, cycle:1,star:3},
+                        ]
+                    }, {
+                        id: 103, name: "督办任务", serieslevel: [
+                            { id: 1031, name: "task1-督办", text: "task1-督办", start: new Date(2019, 06, 16, 4, 30), end: new Date(2019, 06, 18, 15, 45) ,state:0, cycle:0,delay:1,lastChild:true},
+                        ]
+                    },
+                ]
+            },
+            {
+                id: 110, name: "主任务", series: [
+                    {
+                        id: 111, name: "执行任务", serieslevel: [
+                            { id: 1111, name: "task1-执行", text: "task1-执行", start: new Date(2019, 06, 17, 4, 30), end: new Date(2019, 06, 18, 15, 45) ,state:0, cycle:1,approve:1,schedule:50},
+                            { id: 1112, name: "task2-执行", text: "task2-执行", start: new Date(2019, 06, 15, 7, 30), end: new Date(2019, 06, 17, 12, 30) ,state:3, cycle:0,star:6},
+                            { id: 1113, name: "task3-执行", text: "task3-执行", start: new Date(2019, 06, 15, 8, 30), end: new Date(2019, 06, 17, 13, 30) ,state:2, cycle:1,delay:1,private:1,schedule:50,lastChild:true},
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 120, name: "主任务", series: [
+                    {
+                        id: 121, name: "执行任务", serieslevel: [
+                            { id: 1211, name: "task1-执行", text: "Test1：需求评审", start: new Date(2019, 06, 18, 3, 30), end: new Date(2019, 06, 18, 15, 45) ,state:3,approve:1,schedule:10,lastChild:true},
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 130, name: "主任务", series: [
+                    {
+                        id: 131, name: "执行任务", serieslevel: [
+                            { id: 1311, name: "task1-执行", text: "task1-执行", start: new Date(2019, 06, 18, 3, 30), end: new Date(2019, 06, 18, 20, 45) ,state:2,delay:1,lastChild:true},
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 140, name: "主任务", series: [
+                    { id: 1411, name: "task1", text: "Test1：你们", start: new Date(2019, 06, 14, 3, 30), end: new Date(2019, 06, 14, 15, 45), readOnly: true ,state:1, cycle:1,approve:1,star:1},
+                    { id: 1412, name: "task2", text: "Test1-2", start: new Date(2019, 06, 15, 6, 30), end: new Date(2019, 06, 17, 12, 30) ,state:0,lastChild:true},
+                    { id: 1413, name: "task33", text: "Test1-2222", start: new Date(2019, 06, 15, 6, 30), end: new Date(2019, 06, 17, 12, 30) ,state:0,lastChild:true}
+                ]
+            },
+            {
+                id: 120, name: "type1", series: [
+                    { id: 1210, name: "task4", text: "Test1：不是说好的嘛？", start: new Date(2019, 06, 18, 3, 30), end: new Date(2019, 06, 18, 18, 45) ,state:2,lastChild:true}
+                ]
+            },
+            {
+                id: 130, name: "type2", series: [
+                    { id: 1310, name: "task5", text: "task5", start: new Date(2019, 06, 16, 3, 30), end: new Date(2019, 06, 18, 15, 45) ,state:1, cycle:1,lastChild:true}
+                ]
+            },
+            {
+                id: 170, name: "type3", series: [
+                    { id: 1710, name: "task6", text: "task6:不是说好的嘛？", start: new Date(2019, 06, 12, 4, 30), end: new Date(2019, 06, 21, 6, 00) ,state:3, cycle:1,schedule:10,lastChild:true}
+                ]
+            },
+            {
+                id: 150, name: "type4", series: [
+                    {
+                        id: 1510, name: "task7", text: "task7：需求评审", start: new Date(2019, 06, 18, 3, 00), end: new Date(2019, 06, 26, 4, 00),state:3,star:3,lastChild:true
+                    }]
+            },
+            {
+                id: 160, name: "type5", series: [
+                    {
+                        id: 1610, name: "task8", text: "task8：需求评审", start: new Date(2019, 06, 12, 4, 30), end: new Date(2019, 06, 15, 18, 00),state:1, cycle:1,delay:1,star:3,lastChild:true
+                    }]
+            },
+            
+        ];
+        var selectedObj = null;
+        $("#ganttChart").ganttView({
+            ganttScale: "hours",// months  weeks days  hours
+            showWeekends: true, //是否现在周末高亮
+            showLine: true,//是否显示 当前时间线(为"周"时显示背景颜色)
+            data: ganttData2, //数据来源
+            vtHeaderWidth: 300,//左侧任务模块宽度
+            cellWidth: 50, //格子宽度(ganttScale = hours/weeks:宽度重新计算 最小为50)
+            cellHeight: 40,//格子行高
+            titileHeight: 40,//标题行高
+            start: new Date(2019, 06, 14), //范围最小时间(请根据 ganttScale 参数调节初始时间范围)
+            end: new Date(2019, 06, 20), //范围最大时间
+            slideWidth: '100%',//甘特图宽度
+            excludeWeekends: true,//排除星期的最后一天
+            showDayOfWeek: true,//是否显示星期
+            showHolidays: false,//显示节假日
+            excludeHolidays: false,//排除节假日
+            gridHoverL:true,//是否显示鼠标移入效果(列)
+            gridHoverH:true,//是否显示鼠标移入效果(行)
+            isUnfold:true,//模块下任务超过2条 显示展开收起按钮
+            unfoldConfig:false,//初始化展开/收起(模块下任务超过2条 显示展开收起按钮) true:收起
+            clicked: function (o) {
+                selectedObj = o;
+                var data = selectedObj.data('block-data');
+                var itemName = data.itemName ? data.itemName : "";
+                var seriesName = data.seriesName ? data.seriesName : "";
+                var text = data.text ? data.text : "";
+                var sYYYY = data.start.getYear();
+                sYYYY = sYYYY < 1000 ? sYYYY + 1900 : sYYYY;
+                var sMM = data.start.getMonth() + 1;
+                var sDD = data.start.getDate();
+                var eYYYY = data.end.getYear();
+                eYYYY = eYYYY < 1000 ? eYYYY + 1900 : eYYYY;
+                var eMM = data.end.getMonth() + 1;
+                var eDD = data.end.getDate();
+                $('#ganttData-item-id').val(data.itemId);
+                $('#ganttData-item-name').val(itemName);
+                $('#ganttData-series-id').val(data.seriesId);
+                $('#ganttData-series-name').val(seriesName);
+                $('#ganttData-series-start').val(sYYYY + "/" + sMM + "/" + sDD);
+                $('#ganttData-series-end').val(eYYYY + "/" + eMM + "/" + eDD);
+                $('#ganttData-series-text').val(text);
+                console.log(`${data.itemId} ${itemName} ${data.seriesId} ${seriesName} ${sYYYY + "/" + sMM + "/" + sDD} ${eYYYY + "/" + eMM + "/" + eDD}`)
+            },
+
+            dblClicked: function (o) {
+                if (selectedObj == null) { return; }
+                if (selectedObj.data('block-data').seriesId == o.data('block-data').seriesId) {
+                    $('#ganttData-reset').trigger("click");
+                }
+            },
+            changed: function (o) {
+                o.trigger("click");
+            }
+        });
+        $('#ganttData-add').click(function () {
+            var name = $('#ganttData-series-name').val();
+            name = (name == "") ? null : name;
+            var text = $('#ganttData-series-text').val();
+            text = (text == "") ? null : text;
+            var start = $('#ganttData-series-start').val().split("/");
+            var end = $('#ganttData-series-end').val().split("/");
+            var data = [{
+                id: parseInt($('#ganttData-item-id').val()),
+                name: $('#ganttData-item-name').val(),
+                series: [{
+                    id: parseInt($('#ganttData-series-id').val()),
+                    name: name,
+                    text: text,
+                    start: new Date(start[0], parseInt(start[1]) - 1, start[2]),
+                    end: new Date(end[0], parseInt(end[1]) - 1, end[2]),
+                }]
+            }];
+            $().ganttView.addData(data);
+        });
+        $('#ganttData-refresh').click(function () {
+            if (selectedObj == null) { return; }
+            var data = selectedObj.data('block-data');
+            data.itemName = $('#ganttData-item-name').val();
+            data.seriesName = $('#ganttData-series-name').val();
+            var start = $("#ganttData-series-start").val().split("/");
+            data.start = new Date(start[0], parseInt(start[1]) - 1, start[2]);
+            var end = $("#ganttData-series-end").val().split("/");
+            data.end = new Date(end[0], parseInt(end[1]) - 1, end[2]);
+            data.text = $('#ganttData-series-text').val();
+            selectedObj.refreshGanttData();
+
+        });
+        $('#ganttData-delete').click(function () {
+            if (selectedObj == null) { return; }
+            selectedObj.deleteGanttData(selectedObj);
+            $('#ganttData-reset').trigger("click");
+        });
+        $('#ganttData-reset').click(function () {
+            selectedObj = null;
+            $('.ganttData-input input').val("");
+        });
+    });
+
+</script>
+</html>
