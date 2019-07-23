@@ -8,11 +8,11 @@
 > clicked，dblClicked，changed事件
 > ...
 
-![](describeJPG/1.jpg)
-![](describeJPG/2.jpg)
-![](describeJPG/3.jpg)
-![](describeJPG/4.jpg)
-![](describeJPG/5.jpg)
+![](describeJPG/1.png)
+![](describeJPG/2.png)
+![](describeJPG/3.png)
+![](describeJPG/4.png)
+![](describeJPG/5.png)
 
 ####  调用方式：<br/> #
 <pre>
