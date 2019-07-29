@@ -19,7 +19,7 @@
   <code>
        $("#ganttChart").ganttView({
             ganttScale: "hours",// months  weeks days  hours
-            showWeekends: true, //是否现在周末高亮
+            showWeekends: true, //是否显示周末高亮
             showLine: true,//是否显示 当前时间线(为"周"时显示背景颜色)
             data: ganttData2, //数据来源
             vtHeaderWidth: 300,//左侧任务模块宽度
