@@ -7,6 +7,7 @@
 > 节假日高亮
 > clicked，dblClicked，changed事件
 > ...
+> 如果显示不出来图片信息，请转移到https://www.jq22.com/jquery-info22001查看
 
 ![](describeJPG/1.jpg)
 
